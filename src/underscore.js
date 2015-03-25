@@ -11,8 +11,19 @@ var myFunctions = {
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
-  extend: function(obj) {
-
+  extend: function(obj1, obj2) {
+    var obj = {};
+    if(obj1==={}){
+      obj = obj2;
+      return obj;
+    }
+    obj = obj1;
+    for (var i = 1; i < arguments.length; i++) {
+      for(var key in arguments[i]){
+      obj[key] = arguments[i][key];
+      }
+    }
+    return obj;
   },
 
   // Return a function that can be called at most one time. Subsequent calls
@@ -26,6 +37,13 @@ var myFunctions = {
   // TIP: We'll return a new function that delegates to the old one, but only
   // if it hasn't been called before.
   return function() {
+    if(alreadyCalled){
+      return result;
+    } else{
+      result = func();
+      alreadyCalled = true;
+      return result;
+    }
 
     // TIP: .apply(this, arguments) is the standard way to pass on all of the
     // information from one function call to another.
@@ -43,7 +61,13 @@ var myFunctions = {
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   delay: function(func, wait) {
-
+    var arr = [];
+    if(arguments[2]){
+      for (var i = 2; i < arguments.length; i++) {
+        arr.push(arguments[i]);
+      }
+    }
+    return setTimeout(function(){func.apply(this, arr);}, wait);
   },
 
   // Memoize an expensive function by storing its results. You may assume
@@ -55,6 +79,46 @@ var myFunctions = {
   // http://addyosmani.com/blog/faster-javascript-memoization/
   memoize: function(func) {
 
+    var cache = {};
+
+    return function inner(n){
+      if(cache[n]){
+        return cache[n];
+      } else{
+        cache[n] = func(n);
+        return func(n);
+      }
+
+
+    // var k = 1;
+    // return function inner(n){
+    //     while(k <= n){
+    //       if(cache[k-1] && cache[k-2]){
+    //           cache[k] = cache[k-1] + cache[k-2];
+    //       }else{
+    //           cache[k] = func(k);
+    //       }
+    //       k++;
+    //       if(k-1 === n) return cache[n];
+    //     }
+        
+        // return cache[n];
+    };
+    // var cache = {}, n = 1;
+
+    // return function inner(n){
+    //     if(cache[n]){
+    //         return cache[n];
+    //     }
+    //   return cache[n] = func(n);
+    // };
+    // //   while(i < n){
+    // //      i++;
+    // //      cache[i] = func(i);
+    // //     //  console.log(cache[i]);
+    // //     inner(i);
+    // //   }
+    // //   return cache[n];
   }
 
 };
